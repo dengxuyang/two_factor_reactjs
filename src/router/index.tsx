@@ -5,10 +5,16 @@ import LoginPage from "../pages/login.page";
 import ProfilePage from "../pages/profile.page";
 import RegisterPage from "../pages/register.page";
 import Validate2faPage from "../pages/validate2fa.page";
+import DashboardPage from "../pages/dashboard.page";
+
 
 const authRoutes: RouteObject = {
   path: "*",
   children: [
+    {
+      index: true,
+      element: <LoginPage />,
+    },
     {
       path: "login",
       children: [
@@ -26,6 +32,7 @@ const authRoutes: RouteObject = {
       path: "register",
       element: <RegisterPage />,
     },
+    
   ],
 };
 
@@ -33,13 +40,16 @@ const normalRoutes: RouteObject = {
   path: "*",
   element: <Layout />,
   children: [
-    {
-      index: true,
-      element: <HomePage />,
-    },
+    // {
+    //   index: true,
+    //   element: <HomePage />,
+    // },
     {
       path: "profile",
       element: <ProfilePage />,
+    },{
+      path: "dashboard",
+      element: <DashboardPage />,
     },
   ],
 };

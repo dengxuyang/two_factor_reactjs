@@ -80,7 +80,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <section className="py-8 bg-ct-blue-600 min-h-screen grid place-items-center">
+    <section className="py-8 bg-main-dark-600 min-h-screen grid place-items-center">
       <div className="w-full">
         <h1 className="text-4xl xl:text-6xl text-center font-[600] text-ct-yellow-600 mb-4">
           Welcome to CodevoWeb!

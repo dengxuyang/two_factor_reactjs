@@ -12,6 +12,7 @@ module.exports = {
         'ct-dark-100': '#f5f6f7',
         'ct-blue-600': '#2363eb',
         'ct-yellow-600': '#f9d13e',
+        'main-dark-600':'#141416'
       },
       fontFamily: {
         Poppins: ['Poppins, sans-serif'],
@@ -27,5 +28,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
 };

@@ -63,7 +63,7 @@ const TwoFactorAuth: FC<TwoFactorAuthProps> = ({
         }
       );
       store.setRequestLoading(false);
-      store.setAuthUser(user);
+      // store.setAuthUser(user);
       closeModal();
       toast.success("Two-Factor Auth Enabled Successfully", {
         position: "top-right",

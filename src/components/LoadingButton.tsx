@@ -19,7 +19,7 @@ export const LoadingButton: React.FC<LoadingButtonProps> = ({
     <button
       type="submit"
       className={twMerge(
-        `w-full py-3 font-semibold rounded-lg outline-none border-none flex justify-center`,
+        `btn h-10 min-h-[1rem] w-full py-2 font-semibold  rounded-3xl outline-none border-none flex justify-center bg-gradient-to-b  hover:from-[#F29A9D] hover:to-[#AE6FFF]`,
         `${btnColor} ${loading && "bg-[#ccc]"}`
       )}
     >
@@ -29,7 +29,9 @@ export const LoadingButton: React.FC<LoadingButtonProps> = ({
           <span className="text-slate-500 inline-block">Loading...</span>
         </div>
       ) : (
-        <span className={`${textColor}`}>{children}</span>
+        <span className={twMerge(`text-[16px] font-medium`, `${textColor}`)}>
+          {children}
+        </span>
       )}
     </button>
   );
