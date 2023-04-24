@@ -46,6 +46,23 @@ export interface AccountInfo {
   };
   msg: string;
 }
+export interface AssetsInfo {
+  code: number;
+  data: {
+    total_value: number;
+    apy: number;
+    available: number;
+    earn: number;
+    assets: {
+      symbol: string;
+      balance: string;
+      available: string;
+      freeze: string;
+      earn: string;
+    }[];
+  };
+  msg: string;
+}
 
 export interface TotpKey {
   code: number;

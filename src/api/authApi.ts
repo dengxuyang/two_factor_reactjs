@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "/";
-// const BASE_URL = "'https://copilot.tel/api/";
+const BASE_URL = "/api";
+// const BASE_URL = "https://copilot.tel/";
 export const authApi = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,

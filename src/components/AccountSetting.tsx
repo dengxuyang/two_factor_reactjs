@@ -3,7 +3,6 @@ import { object, string, TypeOf } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import QRCode from "qrcode";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { LoginInput } from "../pages/login.page";
 import { useEffect, useState } from "react";
 import CopyHelper from "./Copy";
 import FormInput from "./FormInput";
@@ -11,16 +10,14 @@ import useStore from "../store";
 import { toast } from "react-toastify";
 import { tokenApi } from "../api/authApi";
 import { AccountInfo, DefRes, TotpKey } from "../api/types";
+import { LoadingButton } from "./LoadingButton";
 
-const loginSchema = object({
-  email: string()
-    .min(1, "Email address is required")
-    .email("Email Address is invalid"),
-  password: string()
-    .min(1, "Password is required")
-    .min(8, "Password must be more than 8 characters")
-    .max(32, "Password must be less than 32 characters"),
+const passWordSchema = object({
+  oldPass: string().min(1, "oldPassword is required"),
+
+  newPass: string().min(1, "newPassword is required"),
 });
+export type PassWordInput = TypeOf<typeof passWordSchema>;
 function AccountSetting() {
   const [showItem, setShowItem] = useState("mainPage");
   const [accountInfo, setAccountInfo] = useState<AccountInfo>();
@@ -28,8 +25,8 @@ function AccountSetting() {
   const [qrcodeUrl, setqrCodeUrl] = useState("");
   const [privateKey, setprivateKey] = useState("");
   const store = useStore();
-  const methods = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
+  const methods = useForm<PassWordInput>({
+    resolver: zodResolver(passWordSchema),
   });
   const {
     reset,
@@ -42,8 +39,35 @@ function AccountSetting() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSubmitSuccessful]);
-  const onSubmitHandler: SubmitHandler<LoginInput> = (values) => {
+  const onSubmitHandler: SubmitHandler<PassWordInput> =async (values) => {
     // loginUser(values);
+    console.log(values);
+    try {
+      store.setRequestLoading(true)
+      const { data: status } = await tokenApi.post<DefRes>("/api/updateUserPass", values);
+      if (status.code === 0) {
+        setShowItem('chagePWSuccess')
+        store.setRequestLoading(false)
+      } else {
+        toast.error(status.msg, {
+          position: "top-right",
+        });
+        store.setRequestLoading(false)
+      }
+    } catch (error: any) {
+      const resMessage =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.response.data.detail ||
+        error.message ||
+        error.toString();
+      toast.error(resMessage, {
+        position: "top-right",
+      });
+      store.setRequestLoading(false)
+    }
+    
   };
   const getUserSetting = async () => {
     try {
@@ -103,13 +127,16 @@ function AccountSetting() {
   };
   const handleEnble2FA = async () => {
     try {
-      const { data: status } = await tokenApi.post<DefRes>("/api/updateUserTotp", {
-        key:totpKey?.data.secret,
-        totp:privateKey
-      });
+      const { data: status } = await tokenApi.post<DefRes>(
+        "/api/updateUserTotp",
+        {
+          key: totpKey?.data.secret,
+          totp: privateKey,
+        }
+      );
       if (status.code === 0) {
-        await getUserSetting()
-        setShowItem("mainPage")
+        await getUserSetting();
+        setShowItem("mainPage");
       } else {
         toast.error(status.msg, {
           position: "top-right",
@@ -130,7 +157,9 @@ function AccountSetting() {
   };
   useEffect(() => {
     getUserSetting();
+   
   }, []);
+
 
   return (
     <div>
@@ -230,19 +259,19 @@ function AccountSetting() {
                 onSubmit={handleSubmit(onSubmitHandler)}
                 className="max-w-md w-full mt-9 mx-auto overflow-hidden space-y-5"
               >
-                <FormInput label="Password" name="password" type="password" />
+                <FormInput label="Password" name="oldPass" type="password" />
                 <FormInput
                   label="Confirm password"
-                  name="Confirm password"
+                  name="newPass"
                   type="password"
                 />
-                <CommonButton
-                  onClick={() => setShowItem("chagePWSuccess")}
+                <LoadingButton
+                  loading={store.requestLoading}
                   btnColor={"bg-[#EC6E72]"}
-                  btnHight={"h-[46px]"}
+                  // btnHight={"h-[46px]"}
                 >
                   Change password
-                </CommonButton>
+                </LoadingButton>
               </form>
             </FormProvider>
           </div>
@@ -299,7 +328,7 @@ function AccountSetting() {
             <div className="bg-[#353945] max-w-[296px] mx-auto rounded-t-3xl flex flex-col items-center py-8 mt-5">
               <div className="w-40 h-40 border-2 border-dashed border-[#EC6E72] rounded-xl flex justify-center items-center mb-6">
                 <div className=" w-32 h-32 border-2  bg-white rounded-xl flex justify-center items-center p-3">
-                  <img  src={qrcodeUrl} alt="" />
+                  <img src={qrcodeUrl} alt="" />
                 </div>
               </div>
               <CopyHelper
@@ -334,7 +363,7 @@ function AccountSetting() {
               />
             </div>
             <CommonButton
-              onClick={() =>handleEnble2FA()}
+              onClick={() => handleEnble2FA()}
               btnColor={"bg-[#EC6E72]"}
               btnHight={"h-[46px]"}
             >

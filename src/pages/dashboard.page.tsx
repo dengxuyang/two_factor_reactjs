@@ -23,7 +23,7 @@ const DashboardPage = () => {
                   <span className="mr-2 relative">
                     <CommonButton btnColor="bg-#353945">
                       <label
-                        htmlFor="my-modal-3"
+                        htmlFor="my-modal-2"
                         className=" absolute w-full h-full top-0 left-0 leading-8"
                       >
                         Withdraw
@@ -36,7 +36,7 @@ const DashboardPage = () => {
                       textColor="text-[#353945]"
                     >
                       <label
-                        htmlFor="my-modal-2"
+                        htmlFor="my-modal-3"
                         className=" absolute w-full h-full top-0 left-0 leading-8"
                       >
                         Deposit

@@ -11,7 +11,7 @@ export default defineConfig({
         target: 'https://copilot.tel',
         changeOrigin: true,
         secure: false,
-        // rewrite: path => path.replace(/^\/api/, '') // 去掉/api前缀
+         rewrite: path => path.replace(/^\/api/, '') // 去掉/api前缀
       }
     }
   }

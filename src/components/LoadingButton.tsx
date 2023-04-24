@@ -19,7 +19,7 @@ export const LoadingButton: React.FC<LoadingButtonProps> = ({
     <button
       type="submit"
       className={twMerge(
-        `btn h-10 min-h-[1rem] w-full py-2 font-semibold  rounded-3xl outline-none border-none flex justify-center bg-gradient-to-b  hover:from-[#F29A9D] hover:to-[#AE6FFF]`,
+        `btn h-10 min-h-[1rem] normal-case w-full py-2 font-semibold  rounded-3xl outline-none border-none flex justify-center bg-gradient-to-b  hover:from-[#F29A9D] hover:to-[#AE6FFF]`,
         `${btnColor} ${loading && "bg-[#ccc]"}`
       )}
     >

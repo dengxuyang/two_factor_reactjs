@@ -16,7 +16,7 @@ function BlanceModal() {
           >
             ✕
           </label>
-          <h3 className="text-2xl font-bold">Withdraw USDT</h3>
+          <h3 className="text-2xl font-bold">Deposit USDT</h3>
           <div className="flex flex-col items-center">
             <div className="w-full h-11 bg-[#353945] flex justify-between rounded-[4px] items-center p-5 mr-3 mt-3">
               <div>
@@ -104,7 +104,7 @@ function BlanceModal() {
           </label>
           {!withdrawSuccess ? (
             <div>
-              <h3 className="text-2xl font-bold">Deposit USDT</h3>
+              <h3 className="text-2xl font-bold">Withdraw USDT</h3>
               <div className="">
                 <div className="mt-5 pt-3 mb-2">
                   <label className="block text-sm font-bold text-white mb-2">
