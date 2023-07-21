@@ -14,17 +14,17 @@ import { LoadingButton } from "./LoadingButton";
 
 const passWordSchema = object({
   oldPass: string().min(1, "oldPassword is required"),
-
   newPass: string().min(1, "newPassword is required"),
 });
 export type PassWordInput = TypeOf<typeof passWordSchema>;
 function AccountSetting() {
+  const store = useStore();
   const [showItem, setShowItem] = useState("mainPage");
-  const [accountInfo, setAccountInfo] = useState<AccountInfo>();
+  const [accountInfo, setAccountInfo] = useState<AccountInfo|null>(store.userSetting);
   const [totpKey, setTotpKey] = useState<TotpKey>();
   const [qrcodeUrl, setqrCodeUrl] = useState("");
   const [privateKey, setprivateKey] = useState("");
-  const store = useStore();
+  
   const methods = useForm<PassWordInput>({
     resolver: zodResolver(passWordSchema),
   });
@@ -78,6 +78,7 @@ function AccountSetting() {
       if (account.code === 0) {
         console.log(account.data);
         setAccountInfo(account);
+        store.setUserSetting(account)
       } else {
         toast.error(account.msg, {
           position: "top-right",
@@ -155,10 +156,7 @@ function AccountSetting() {
       });
     }
   };
-  useEffect(() => {
-    getUserSetting();
-   
-  }, []);
+
 
 
   return (
@@ -259,9 +257,9 @@ function AccountSetting() {
                 onSubmit={handleSubmit(onSubmitHandler)}
                 className="max-w-md w-full mt-9 mx-auto overflow-hidden space-y-5"
               >
-                <FormInput label="Password" name="oldPass" type="password" />
+                <FormInput label="Old Password" name="oldPass" type="password" />
                 <FormInput
-                  label="Confirm password"
+                  label="New password"
                   name="newPass"
                   type="password"
                 />

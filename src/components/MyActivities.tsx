@@ -1,79 +1,220 @@
+import { toast } from "react-toastify";
+import { tokenApi } from "../api/authApi";
+import { ActivityInfo } from "../api/types";
 import { CommonButton } from "./CommonButton";
+import { useEffect, useState } from "react";
+import dayjs from "dayjs";
+import PaginationWarp from "./Pagination";
+
 const styles = {
   cth: "bg-[#242529] text-[#777E90] normal-case text-xs font-bold",
 };
+type ResActivity = {
+  acType: number;
+  page: number;
+  size: number;
+};
 function MyActivites() {
+  const [activityPamars, setActivityPamars] = useState<ResActivity>({
+    acType: 0,
+    page: 1,
+    size: 20,
+  });
+  const [activityList, setActivityList] = useState<ActivityInfo>();
+  const getUserActivity = async () => {
+    try {
+      const { data: assets } = await tokenApi.post<ActivityInfo>(
+        "/api/userActivity",
+        activityPamars
+      );
+      if (assets.code === 0) {
+        setActivityList(assets);
+      } else {
+        toast.error(assets.msg, {
+          position: "top-right",
+        });
+      }
+    } catch (error: any) {
+      // store.setRequestLoading(false);
+      const resMessage =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.response.data.detail ||
+        error.message ||
+        error.toString();
+      toast.error(resMessage, {
+        position: "top-right",
+      });
+    }
+  };
+  const handleFilter = (type: number) => {
+    setActivityPamars((pre) => ({ ...pre, acType: type }));
+    console.log(type);
+  };
+  const changePagination=(page:number)=>{
+    setActivityPamars((pre) => ({ ...pre, page }));
+  }
+  useEffect(() => {
+    getUserActivity();
+  }, [activityPamars]);
   return (
     <div className="bg-[#242529] w-full max-w-[748px] rounded-2xl px-[32px] py-10">
       <div className="font-bold text-2xl flex justify-between">
         <div>My Activities</div>
         <div>
           <div className="tabs tabs-boxed bg-inherit ">
-            <a className="tab text-[#777E90] text-xs font-medium">Withdraw</a>
-            <a className="tab text-white text-xs font-medium bg-[#353945] !rounded-3xl ">
+            <a
+              onClick={() => handleFilter(1)}
+              className={`tab  text-xs font-medium ${
+                activityPamars.acType == 1
+                  ? "bg-[#353945] !rounded-3xl text-white"
+                  : "text-[#777E90]"
+              } `}
+            >
+              Withdraw
+            </a>
+            <a
+              onClick={() => handleFilter(2)}
+              className={`tab  text-xs font-medium ${
+                activityPamars.acType == 2
+                  ? "bg-[#353945] !rounded-3xl text-white"
+                  : "text-[#777E90]"
+              } `}
+            >
               Deposit
             </a>
-            <a className="tab text-[#777E90] text-xs font-medium">Buy</a>
-            <a className="tab text-[#777E90] text-xs font-medium">Claim</a>
-            <a className="tab text-[#777E90] text-xs font-medium">All type</a>
+            {/* <a className={`tab  text-xs font-medium ${activityPamars.acType==2?'bg-[#353945] !rounded-3xl text-white':'text-[#777E90]'} `}>Buy</a>
+            <a className={`tab  text-xs font-medium ${activityPamars.acType==2?'bg-[#353945] !rounded-3xl text-white':'text-[#777E90]'} `}>Claim</a> */}
+            <a
+              className={`tab  text-xs font-medium ${
+                activityPamars.acType == 0
+                  ? "bg-[#353945] !rounded-3xl text-white"
+                  : "text-[#777E90]"
+              } `}
+              onClick={() => handleFilter(0)}
+            >
+              All type
+            </a>
           </div>
         </div>
       </div>
       <div>
-        <div className="w-full mt-4">
+        <div className="w-full mt-4 pb-5">
           <table className="table w-full ">
             {/* head */}
             <thead>
               <tr className="border-y border-[#353945]">
                 <th className={styles.cth}>Type</th>
                 <th className={styles.cth}>Amount</th>
-                <th className={styles.cth}>Transaction</th>
+                {/* <th className={styles.cth}>Transaction</th> */}
                 <th className={styles.cth}>Date</th>
               </tr>
             </thead>
             <tbody>
               {/* row 1 */}
-              <tr>
-                <td className="bg-[#242529]">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-[96px] h-[33px] bg-[#353945] text-xs font-bold rounded flex justify-center items-center">
-                      <svg
-                        width="12"
-                        height="13"
-                        viewBox="0 0 12 13"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M6 0.5C2.68652 0.5 0 3.18652 0 6.5C0 9.81348 2.68652 12.5 6 12.5C9.31348 12.5 12 9.81348 12 6.5C12 3.18652 9.31348 0.5 6 0.5ZM6 11.75C3.10547 11.75 0.75 9.39453 0.75 6.5C0.75 3.60547 3.10547 1.25 6 1.25C8.89453 1.25 11.25 3.60547 11.25 6.5C11.25 9.39453 8.89453 11.75 6 11.75ZM7.86473 6.73072C8.00759 6.97243 8.07933 7.25441 8.07933 7.5774C8.07933 8.07324 7.93139 8.48633 7.63622 8.81666C7.34105 9.14771 6.91481 9.34255 6.35742 9.40114V10.25H5.64696V9.40552C4.71752 9.31032 4.14255 8.76978 3.92065 7.78541L5.01928 7.49902C5.12109 8.11791 5.45801 8.42701 6.03002 8.42701C6.29735 8.42701 6.49512 8.3611 6.62109 8.22852C6.74707 8.09593 6.81005 7.93627 6.81005 7.74877C6.81005 7.55469 6.74705 7.40745 6.62109 7.30784C6.49512 7.20753 6.21459 7.08078 5.78027 6.92698C5.3899 6.79152 5.08446 6.65818 4.86473 6.52491C4.64501 6.39308 4.4663 6.20778 4.32933 5.96973C4.19236 5.73095 4.12352 5.45262 4.12352 5.13622C4.12352 4.72093 4.24657 4.34666 4.49121 4.01415C4.73585 3.68237 5.12109 3.47947 5.64698 3.4055V2.75H6.35745V3.40552C7.15139 3.50075 7.66556 3.94972 7.89919 4.75318L6.92067 5.15455C6.72952 4.60377 6.43505 4.32837 6.03518 4.32837C5.83448 4.32837 5.67335 4.3899 5.55251 4.51295C5.43091 4.63599 5.37014 4.78541 5.37014 4.96046C5.37014 5.13917 5.42873 5.27614 5.54592 5.37209C5.66238 5.46732 5.91361 5.58523 6.2974 5.72659C6.71927 5.88041 7.05033 6.02614 7.28984 6.16311C7.53002 6.30006 7.7212 6.48976 7.86473 6.73072Z"
-                          fill="white"
-                        />
-                      </svg>
-                      <span className="ml-2">
-                      Claim
-                      </span>
-                     
-                    </div>
-                  </div>
-                </td>
-                <td className="bg-[#242529] text-sm">
-                  <div>
-                   1
-                  </div>
-                </td>
-                <td className="bg-[#242529] text-sm">
-                  <div>
-                   2
-                  </div>
-                </td>
-                <td className="bg-[#242529] text-sm">
-                  <div>
-                   3    
-                  </div>
-                </td>
-              </tr>
+              {activityList?.data.activities.map((activity) => {
+                return (
+                  <tr>
+                    <td className="bg-[#242529] border-y border-[#353945]">
+                      <div className="flex items-center space-x-3">
+                        {activity.bill_type == 1 ? (
+                          <div className="w-[96px] h-[33px] bg-[#353945] text-xs font-bold rounded flex justify-center items-center">
+                            <svg
+                              width="12"
+                              height="14"
+                              viewBox="0 0 12 14"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M8.04565 5.45703L9.29565 5.45703C9.62717 5.45703 9.94512 5.58873 10.1795 5.82317C10.414 6.0576 10.5457 6.37556 10.5457 6.7071L10.5457 11.7074C10.5457 12.0389 10.414 12.3569 10.1795 12.5913C9.94512 12.8258 9.62717 12.9575 9.29565 12.9575L1.79565 12.9575C1.46413 12.9575 1.14619 12.8258 0.911771 12.5913C0.67735 12.3569 0.545654 12.0389 0.545654 11.7074L0.545654 6.95712C0.545654 6.26676 1.10534 5.45703 1.79565 5.45703L3.04565 5.45703"
+                                stroke="white"
+                                stroke-width="1.00003"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                              <path
+                                d="M8.04572 3.5415L5.54572 1.04136L3.04572 3.5415"
+                                stroke="white"
+                                stroke-width="1.00003"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                              <path
+                                d="M5.54578 9.125L5.54578 1.79144"
+                                stroke="white"
+                                stroke-width="1.00003"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                            </svg>
+                            <span className="ml-2">Withdraw</span>
+                          </div>
+                        ) : (
+                          <div className="w-[96px] h-[33px] bg-[#353945] text-xs font-bold rounded flex justify-center items-center">
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M8.54565 3.99854L9.79565 3.99854C10.1272 3.99854 10.4451 4.13024 10.6795 4.36467C10.914 4.5991 11.0457 4.91706 11.0457 5.2486L11.0457 10.2489C11.0457 10.5804 10.914 10.8984 10.6795 11.1328C10.4451 11.3672 10.1272 11.4989 9.79565 11.4989L2.29565 11.4989C1.96413 11.4989 1.64619 11.3672 1.41177 11.1328C1.17735 10.8984 1.04565 10.5804 1.04565 10.2489L1.04565 5.49862C1.04565 4.80827 1.60534 3.99853 2.29565 3.99853L3.54565 3.99853"
+                                stroke="white"
+                                stroke-width="1.00003"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                              <path
+                                d="M3.54584 6.08301L6.04584 8.58314L8.54584 6.08301"
+                                stroke="white"
+                                stroke-width="1.00003"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                              <path
+                                d="M6.04578 0.5L6.04577 7.83354"
+                                stroke="white"
+                                stroke-width="1.00003"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                            </svg>
+
+                            <span className="ml-2">Deposit</span>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="bg-[#242529] text-sm border-y border-[#353945]">
+                      <div>
+                        {activity.result_amount} {activity.symbol}
+                      </div>
+                    </td>
+                    {/* <td className="bg-[#242529] text-sm text-[#777E90] border-y border-[#353945]">
+                      <div>2</div>
+                    </td> */}
+                    <td className="bg-[#242529] text-[#777E90] text-sm border-y border-[#353945]">
+                      <div>
+                        {dayjs.unix(activity.ts).format("YYYY-MM-DD hh:mm")}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
+          <div className="mt-10 mb-7">
+            <PaginationWarp
+            className=" float-right"
+              total={activityList?.data.activities.length}
+              pageSize={activityPamars.size}
+              current={activityPamars.page}
+              onChange={(page: number)=>changePagination(page)}
+            />
+          </div>
         </div>
       </div>
     </div>

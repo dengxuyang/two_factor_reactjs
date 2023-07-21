@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { authApi } from "../api/authApi";
 import { IUser } from "../api/types";
@@ -9,7 +9,6 @@ import { twMerge } from "tailwind-merge";
 import AccountSetting from "../components/AccountSetting";
 import AccountBlance from "../components/AccountBlance";
 import MyActivites from "../components/MyActivities";
-
 
 
 const styles = {
@@ -23,6 +22,7 @@ const ProfilePage = () => {
     otpauth_url: "",
     base32: "",
   });
+  const location=useLocation()
   const [menuActive, setmenuActive] = useState(0);
  
   const [openModal, setOpenModal] = useState(false);
@@ -98,13 +98,17 @@ const ProfilePage = () => {
       });
     }
   };
+
  
   
   useEffect(() => {
+    if(location?.state?.menuid){
+      setmenuActive(location?.state?.menuid)
+    }
     if (!store.authUser) {
       navigate("/login");
     }
-  }, []);
+  }, [store.authUser]);
 
   return (
     <>
@@ -159,7 +163,7 @@ const ProfilePage = () => {
             {menuActive == 0 ? (
               <AccountSetting />
             ) : menuActive == 1 ? (
-              <AccountBlance />
+              <AccountBlance setmenuActive={setmenuActive}/>
             ) : (
               <MyActivites />
             )}

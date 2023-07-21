@@ -46,7 +46,7 @@ const Validate2faPage = () => {
       });
       store.setRequestLoading(false);
       if (otp_valid) {
-        navigate("/profile");
+        navigate("/");
       } else {
         navigate("/login");
       }
@@ -87,9 +87,9 @@ const Validate2faPage = () => {
           style={{ backgroundImage: `url(/assets/bg-longin.png)` }}
         >
           <div className="flex items-center ml-[30px] mt-[30px]">
-            <img src="/assets/logo-capilot.png" alt="" />
+            <img src="/assets/logo-copilot.svg" alt="" />
             <span className="text-white ml-3 font-medium text-[26px]">
-              CAPILOT
+              COPILOT
             </span>
           </div>
         </div>

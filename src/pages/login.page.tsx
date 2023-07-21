@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useStore from "../store";
 import { authApi, tokenApi } from "../api/authApi";
-import { ILoginResponse, IUserResponse } from "../api/types";
+import { AccountInfo, AssetsInfo, ILoginResponse, IUserResponse } from "../api/types";
 
 const loginSchema = object({
   name: string().min(1, "UserName address is required"),
@@ -43,7 +43,60 @@ const LoginPage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSubmitSuccessful]);
-
+  const getUserAssets = async () => {
+    try {
+      const { data: assets } = await tokenApi.post<AssetsInfo>(
+        "/api/userAsset",
+        {}
+      );
+      if (assets.code === 0) {
+        store.setUserAssets(assets)
+      } else {
+        toast.error(assets.msg, {
+          position: "top-right",
+        });
+      }
+    } catch (error: any) {
+      // store.setRequestLoading(false);
+      const resMessage =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.response.data.detail ||
+        error.message ||
+        error.toString();
+      toast.error(resMessage, {
+        position: "top-right",
+      });
+    }
+  };
+  const getUserSetting = async () => {
+    try {
+      const { data: account } = await tokenApi.post<AccountInfo>(
+        "/api/userSetting",
+        {}
+      );
+      if (account.code === 0) {
+        store.setUserSetting(account)
+      } else {
+        toast.error(account.msg, {
+          position: "top-right",
+        });
+      }
+    } catch (error: any) {
+      // store.setRequestLoading(false);
+      const resMessage =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.response.data.detail ||
+        error.message ||
+        error.toString();
+      toast.error(resMessage, {
+        position: "top-right",
+      });
+    }
+  };
   const loginUser = async (data: LoginInput) => {
     store.setAccount(data)
     data.totp = "";
@@ -54,10 +107,11 @@ const LoginPage = () => {
         "/api/signIn",
         data
       );
-      console.log(loginInfo);
       if (loginInfo.code === 0) {
         store.setToken(loginInfo.data.token);
         //getuserinfo
+        getUserAssets()
+        getUserSetting()
         const { data: user } = await tokenApi.post<IUserResponse>(
           "/api/userInfo",
           {},
@@ -69,7 +123,7 @@ const LoginPage = () => {
           // } else {
           //   navigate("/profile");
           // }
-          navigate("/profile");
+          navigate("/");
         }  else {
           toast.error(user.msg, {
             position: "top-right",
@@ -109,10 +163,10 @@ const LoginPage = () => {
           className="w-[350px] h-screen bg-cover"
           style={{ backgroundImage: `url(/assets/bg-longin.png)` }}
         >
-          <div className="flex items-center ml-[30px] mt-[30px]">
-            <img src="/assets/logo-capilot.png" alt="" />
+          <div className="flex items-center ml-[30px] mt-[30px] cursor-pointer" onClick={()=>navigate('/')}>
+            <img className="w-[45px] h-[45px]" src="/assets/logo-copilot.svg" alt="" />
             <span className="text-white ml-3 font-medium text-[26px]">
-              CAPILOT
+              COPILOT
             </span>
           </div>
         </div>
@@ -124,7 +178,7 @@ const LoginPage = () => {
           <div className="text-white h-full flex justify-center items-center">
             <div className=" max-w-[380]">
               <h2 className=" text-center leading-[2] border-[#353945]  mb-4 font-bold text-white text-[40px] border-b-2">
-                Sign in to Capilot
+                Sign in to Copilot
               </h2>
               <FormProvider {...methods}>
                 <form

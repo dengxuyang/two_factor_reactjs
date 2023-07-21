@@ -1,3 +1,5 @@
+import { string } from "zod";
+
 export interface IUser {
   id: string;
   name: string;
@@ -72,5 +74,89 @@ export interface TotpKey {
 export interface DefRes {
   code: number;
   data: {};
+  msg: string;
+}
+export interface ActivityInfo {
+  code: number;
+  data: {
+    count: number;
+    activities: {
+      uid: number;
+      symbol: string;
+      bill_type: number;
+      change_amount: number;
+      result_amount: number;
+      ts: number;
+    }[];
+  };
+  msg: string;
+}
+
+export interface WithdrawSetting {
+  code: number;
+  data: {
+    address_his: {
+      address: string;
+      chain: string;
+      type: string;
+      symbol: string;
+    }[];
+    fee_list: { fee: string; chain: string; type: string; symbol: string }[];
+  };
+  msg: string;
+}
+export interface PublicProject {
+  code: number;
+  data: {
+    count: number;
+    projects: {
+      id: number;
+      name: string;
+      comment: string;
+      start_ts: number;
+      end_ts: number;
+      ticket_total: number;
+      ticket_price: number;
+      ticket_process: number;
+      earn: number;
+      chain_name: string;
+      status: number;
+    }[];
+  };
+  msg: string;
+}
+export interface Projectdetail {
+  code: number;
+  msg: string;
+  data: {
+    id: number;
+    name: string;
+    comment: string;
+    start_ts: number;
+    end_ts: number;
+    ticket_total: number;
+    ticket_price: number;
+    ticket_process: number;
+    earn: number;
+    chain_name: string;
+    status: number;
+    user_ticket: number;
+    user_earn: number;
+  };
+}
+export interface ProjectEarn {
+  code: number;
+  data: {
+    count: number;
+    project_earn: {
+      token: number;
+      total_value: string;
+      price: string;
+      token_amount: number;
+      total_address: number;
+      average: number;
+      social: string[];
+    }[];
+  };
   msg: string;
 }

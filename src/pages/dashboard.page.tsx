@@ -1,9 +1,13 @@
+import { useMemo } from "react";
 import BlanceModal from "../components/BlanceModal";
 import { CommonButton } from "../components/CommonButton";
+import useStore from "../store";
 const styles = {
   cth: "bg-[#242529] text-[#777E90] normal-case text-xs font-bold",
 };
 const DashboardPage = () => {
+  const store = useStore();
+  const useAssets = useMemo(() => store.userAssets?.data, [store]);
   return (
     <>
       <section className="bg-main-dark-600 min-h-screen relative text-white">
@@ -50,9 +54,11 @@ const DashboardPage = () => {
                   <div className="text-[#777E90] text-sm mb-1">Net Worth</div>
                   <div>
                     <div className="flex">
-                      <span className="text-2xl font-bold">$5,300.27</span>
+                      <span className="text-2xl font-bold">
+                        ${useAssets?.total_value}
+                      </span>
                       <span className="h-7 leading-7 px-2 inline-block rounded whitespace-nowrap ml-1 bg-[#2DAB50]  text-center text-sm font-bold">
-                        APY: 1.25%
+                        APY: {useAssets?.apy}%
                       </span>
                     </div>
                   </div>
@@ -62,7 +68,9 @@ const DashboardPage = () => {
                     Est. Earnings
                   </div>
                   <div>
-                    <span className="text-2xl font-bold">$10,098.36</span>
+                    <span className="text-2xl font-bold">
+                      ${useAssets?.earn}
+                    </span>
                   </div>
                 </div>
                 <div className="flex flex-col  flex-1">
@@ -70,7 +78,9 @@ const DashboardPage = () => {
                     Projects Ongoing
                   </div>
                   <div>
-                    <span className="text-2xl font-bold">50 Tickets</span>
+                    <span className="text-2xl font-bold">
+                      {useAssets?.earn} Tickets
+                    </span>
                   </div>
                 </div>
                 <div className="flex flex-col  flex-1">
@@ -79,7 +89,9 @@ const DashboardPage = () => {
                   </div>
                   <div>
                     <div className="flex items-center">
-                      <span className="text-2xl font-bold">1,641.2028</span>
+                      <span className="text-2xl font-bold">
+                        {useAssets?.available}
+                      </span>
                       <img
                         className="w-6 h-6 ml-2"
                         src="/assets/icon-usdt.svg"
@@ -111,7 +123,7 @@ const DashboardPage = () => {
                 </div>
               </div>
               <div>
-                <div className="w-full mt-4">
+                <div className=" overflow-x-auto mt-4">
                   <table className="table w-full ">
                     {/* head */}
                     <thead>
